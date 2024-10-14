@@ -1,0 +1,111 @@
+stages:
+  - deploy
+
+deploy-staging:
+  stage: deploy
+  tags:
+    - staging-deploy
+  script:
+    - cd $CI_PROJECT_DIR
+    - export DO_RELEASE=$(mktemp)
+    - export NAMEDIR=$(date +%Y%m%d-%H%M%S)
+    - sudo mkdir -pv /var/lib/webapp/releases/$NAMEDIR
+    - sudo cp -ar . /var/lib/webapp/releases/$NAMEDIR/
+    - sudo chown -R webapp.webapp /var/lib/webapp/releases/$NAMEDIR/
+    - |-
+      cat <<EOF >> "${DO_RELEASE}"
+      #!/usr/bin/env bash
+      ln -s /var/lib/webapp/.env /var/lib/webapp/releases/$NAMEDIR/.env
+      rm -rf /var/lib/webapp/releases/$NAMEDIR/storage/ || true
+      ln -s /var/lib/webapp/storage/ /var/lib/webapp/releases/$NAMEDIR/storage
+      cd /var/lib/webapp/releases/$NAMEDIR
+      composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+      php artisan storage:link
+      php artisan app:ci -p
+      #php artisan app:install
+      php artisan config:clear
+      cd /var/lib/webapp
+      rm current # Stop pipeline if we can not delete the dir.
+      ln -s /var/lib/webapp/releases/$NAMEDIR /var/lib/webapp/current
+      EOF
+    - cat "${DO_RELEASE}"
+    - chmod +rx "${DO_RELEASE}"
+    - sudo -u webapp /bin/bash -xe "${DO_RELEASE}"
+    - rm "${DO_RELEASE}"
+    - find /var/lib/webapp/releases/ -maxdepth 1 -mindepth 1 -type d | sort -g | head -n -4 | xargs sudo rm -rf
+    - sudo systemctl restart php8.1-fpm.service
+  only:
+    - development-xxx
+
+deploy-ixl-staging:
+  stage: deploy
+  tags:
+    - ixl-staging
+  script:
+    - cd $CI_PROJECT_DIR
+    - export DIR_ROOT="/domains/api.staging.zeroooo.nl"
+    - export DO_RELEASE=$(mktemp)
+    - export NAMEDIR=$(date +%Y%m%d-%H%M%S)
+    - mkdir -pv ${DIR_ROOT}/releases/$NAMEDIR
+    - cp -ar . ${DIR_ROOT}/releases/$NAMEDIR/
+    - chown -R sundert-dev.site16303 ${DIR_ROOT}/releases/$NAMEDIR/ || true
+    - |-
+      cat <<EOF >> "${DO_RELEASE}"
+      #!/usr/bin/env bash
+      ln -s ${DIR_ROOT}/.env ${DIR_ROOT}/releases/$NAMEDIR/.env
+      rm -rf ${DIR_ROOT}/releases/$NAMEDIR/storage/ || true
+      ln -s ${DIR_ROOT}/storage/ ${DIR_ROOT}/releases/$NAMEDIR/storage
+      cd ${DIR_ROOT}/releases/$NAMEDIR
+      composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+      php artisan storage:link
+      php artisan app:ci -p
+      #php artisan app:install
+      php artisan config:clear
+      cd ${DIR_ROOT}
+      [ -d public_html ] && rm public_html # Stop pipeline if we can not delete the dir.
+      ln -s ${DIR_ROOT}/releases/$NAMEDIR/public ${DIR_ROOT}/public_html
+      EOF
+    - cat "${DO_RELEASE}"
+    - /bin/bash -xe "${DO_RELEASE}"
+    - rm "${DO_RELEASE}"
+    - find ${DIR_ROOT}/releases/ -maxdepth 1 -mindepth 1 -type d | sort -g | head -n -4 | xargs rm -rf
+    - echo sudo systemctl restart php8.1-fpm.service
+  only:
+    - development
+    - development
+
+deploy-ixl-production:
+  stage: deploy
+  tags:
+    - ixl-production
+  script:
+    - cd $CI_PROJECT_DIR
+    - export DIR_ROOT="/domains/api.zeroooo.nl"
+    - export DO_RELEASE=$(mktemp)
+    - export NAMEDIR=$(date +%Y%m%d-%H%M%S)
+    - mkdir -pv ${DIR_ROOT}/releases/$NAMEDIR
+    - cp -ar . ${DIR_ROOT}/releases/$NAMEDIR/
+    - chown -R sundert-dev.site16317 ${DIR_ROOT}/releases/$NAMEDIR/ || true
+    - |-
+      cat <<EOF >> "${DO_RELEASE}"
+      #!/usr/bin/env bash
+      ln -s ${DIR_ROOT}/.env ${DIR_ROOT}/releases/$NAMEDIR/.env
+      rm -rf ${DIR_ROOT}/releases/$NAMEDIR/storage/ || true
+      ln -s ${DIR_ROOT}/storage/ ${DIR_ROOT}/releases/$NAMEDIR/storage
+      cd ${DIR_ROOT}/releases/$NAMEDIR
+      composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+      php artisan storage:link
+      php artisan app:ci -p
+      #php artisan app:install
+      php artisan config:clear
+      cd ${DIR_ROOT}
+      [ -d public_html ] && rm public_html # Stop pipeline if we can not delete the dir.
+      ln -s ${DIR_ROOT}/releases/$NAMEDIR/public ${DIR_ROOT}/public_html
+      EOF
+    - cat "${DO_RELEASE}"
+    - /bin/bash -xe "${DO_RELEASE}"
+    - rm "${DO_RELEASE}"
+    - find ${DIR_ROOT}/releases/ -maxdepth 1 -mindepth 1 -type d | sort -g | head -n -4 | xargs rm -rf
+    - echo sudo systemctl restart php8.1-fpm.service
+  only:
+    - main

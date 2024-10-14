@@ -1,0 +1,32 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    RewriteCond %{DOCUMENT_ROOT}/$1.php -f
+    RewriteRule ^(.*)$ $1.php [L]
+
+    RewriteCond %{DOCUMENT_ROOT}/$1.php -f
+    RewriteRule ^(.*)/$ http://staging.zeroooo.nl/$1 [R=301,L]
+
+    RewriteCond %{THE_REQUEST} ^[A-Z]+\ /[^.]+\.php\ HTTP/
+    RewriteCond %{DOCUMENT_ROOT}/$1.php -f
+    RewriteRule ^([^.]+)\.php$ http://staging.zeroooo.nl/$1 [R=301,L]
+
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+   # RewriteCond %{REQUEST_URI} (\.\w+$) [NC]
+   # RewriteRule ^(.*)$ public/$1
+
+    RewriteCond %{REQUEST_URI} .(jpg|jpeg|png|gif|bmp|webp|ico)$ [NC]
+    RewriteRule ^ - [L]
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php
+</IfModule>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" bootstrap="vendor/autoload.php" colors="true" convertDeprecationsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true">
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">./infrastructure</directory>
+            <directory suffix=".php">./modules</directory>
+            <directory suffix=".php">./database</directory>
+        </include>
+    </coverage>
+    <testsuites>
+        <testsuite name="Infrastructure">
+            <directory suffix="Test.php">./tests/Infrastructure</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory suffix="Test.php">./tests/Integration</directory>
+        </testsuite>
+        <testsuite name="Modules">
+            <directory suffix="Test.php">./tests/Modules</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <server name="APP_NAME" value="backend" />
+        <server name="APP_ENV" value="testing" />
+        <server name="APP_DEBUG" value="true" />
+        <server name="APP_KEY" value="base64:9oY6eCkHLvQivYka+lRgkjbrjH+DP9t5eNWclu7kRL4=" />
+        <server name="BCRYPT_ROUNDS" value="4" />
+        <server name="SMS_DRIVER" value="void" />
+        <server name="PUSH_DRIVER" value="void" />
+        <server name="CACHE_DRIVER" value="array" />
+        <server name="DB_CONNECTION" value="pgsql" />
+        <server name="MAIL_MAILER" value="array" />
+        <server name="QUEUE_CONNECTION" value="sync" />
+        <server name="TELESCOPE_ENABLED" value="false" />
+        <server name="L5_SWAGGER_GENERATE_ALWAYS" value="false" />
+        <server name="PASSPORT_PRIVATE_KEY" value="-----BEGIN PRIVATE KEY-----\n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\ncBwcSDCQrK/gwSirOEoKqEENdnMygLw=\n-----END PRIVATE KEY-----" />
+        <server name="PASSPORT_PUBLIC_KEY" value="-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAuUtQNoL7zdfo/QJzaLyZ\nI7Y63iW993FRvA64JGXEIeLd4Fet36Qn+rl+QSMve9+ih0kNQ/6znLHVYW5ppah3\nvjD6C4RAL8WQ7b2k6EHsrm0dC3LLm2hNQymWrfX5YH/JPX4aCNV6xg9/GKKl8dgU\nRdL6FIs3JXMoOQBn2D2SG2Cbmt8BqLuABkJqUbIGjq6cy/UMi9iQmrjXStoxLMwr\ndrJ/KAaTZZ8RkFT7UJbu0stwgM3S9wRIsGBQCVV69FsbLHI+U4+c4EDGTZDpA4vk\nRxfbXb9iyxl0ioH7u7mcMzHVPKppFDH1ODNv0clboIiq5st+9ffId0MtZnrwn3fS\nrW3QkF5a7mNH3WMIlRd1aADK+mKtl/omWQiXfsKyA1aienOxw3uBSH/jYpMVk6B2\ncBNqJRy79QsbRvtQ6eLTRXWrPXxTTlav7fYV7hCgw3R60UTv67Bic82ceugm8iZA\n3do+901xBciuBCvmdxdoLY5jSBHecXN10zLAREpW6aNI1mHI4cqGC72jzGsxkH6y\nL77i+iWryrseE+lxNqA4dRq5zRfhKtAH6VmLnDY0cF2EBkIP0XXE8ySkfvwKAi4+\nqmppArKu5yM3BlaHrFUgIywU4CUUfuVGrKAVFvsxdibjcQrEo+8EBAIS8X89OsUr\nDVuXdGVHQi58IK54dwCDBbECAwEAAQ==\n-----END PUBLIC KEY-----" />
+        <server name="ADMIN_INITIAL_EMAIL" value="admin@backend.test" />
+        <server name="ADMIN_INITIAL_PASSWORD" value="secret" />
+    </php>
+</phpunit>
